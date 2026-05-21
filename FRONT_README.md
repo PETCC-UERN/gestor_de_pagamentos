@@ -353,7 +353,8 @@ export default function FaturaList({ faturas, onDeletar }) {
 Crie `src/components/FaturaForm.jsx`:
 
 ```jsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import api from '../api/axios'
 
 export default function FaturaForm({ onSalvar }) {
   const [form, setForm] = useState({
@@ -362,6 +363,11 @@ export default function FaturaForm({ onSalvar }) {
     vencimento: '',
     status: 'PENDENTE',
   })
+  const [clientes, setClientes] = useState([])
+
+  useEffect(() => {
+    api.get('/clientes').then((response) => setClientes(response.data))
+  }, [])
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -380,15 +386,20 @@ export default function FaturaForm({ onSalvar }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <input
+      <select
         name="clienteId"
         value={form.clienteId}
         onChange={handleChange}
-        placeholder="ID do Cliente"
-        type="number"
         className="border rounded p-2"
         required
-      />
+      >
+        <option value="">Selecione um cliente</option>
+        {clientes.map((cliente) => (
+          <option key={cliente.id} value={cliente.id}>
+            {cliente.nome}
+          </option>
+        ))}
+      </select>
       <input
         name="valor"
         value={form.valor}
@@ -427,6 +438,9 @@ export default function FaturaForm({ onSalvar }) {
   )
 }
 ```
+
+- O `useEffect` busca a lista de clientes da API assim que o formulario e carregado
+- O `select` exibe o nome de cada cliente, mas envia o `id` ao salvar
 
 ### Pagina de Faturas
 
