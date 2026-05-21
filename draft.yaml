@@ -1,0 +1,53 @@
+models:
+  Cliente:
+    nome: string
+    email: string unique
+    telefone: string nullable
+    relationships:
+      hasMany: Fatura
+
+  Fatura:
+    cliente_id: id:cliente
+    valor: decimal:10,2
+    vencimento: date
+    status: string
+    relationships:
+      belongsTo: Cliente
+
+controllers:
+  Cliente:
+    index:
+      query: all
+      respond: clientes
+    show:
+      find: cliente
+      respond: cliente
+    store:
+      validate: nome, email, telefone
+      save: cliente
+      respond: cliente 201
+    update:
+      find: cliente
+      validate: nome, email, telefone
+      update: cliente
+      respond: cliente
+    destroy:
+      find: cliente
+      delete: cliente
+      respond: 204
+
+  Fatura:
+    index:
+      query: all
+      respond: faturas
+    show:
+      find: fatura
+      respond: fatura
+    store:
+      validate: cliente_id, valor, vencimento, status
+      save: fatura
+      respond: fatura 201
+    destroy:
+      find: fatura
+      delete: fatura
+      respond: 204
